@@ -1,0 +1,148 @@
+.main-container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.main-container .content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container .section-title {
+  font-size: 16px;
+  color: var(--slds-g-color-on-surface-3);
+  font-weight: var(--slds-g-font-weight-6);
+}
+
+.title-label {
+  font-size: 14px;
+  color: var(--slds-g-color-on-surface-3);
+  font-weight: var(--slds-g-font-weight-5);
+}
+
+.footer-content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+/* Mapping columns step */
+.mapping-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mapping-container .row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+}
+
+.mapping-container .row .icon-column {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapping-container .row .field-column {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Data Preview */
+
+.data-preview-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-preview-container > span {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--slds-g-color-on-surface-2);
+  font-weight: var(--slds-g-font-weight-4);
+}
+
+.data-preview-container .datatable-preview {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.file-stats {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.file-stats .content {
+  flex: 1;
+  display: flex;
+  flex-direction: column
+}
+
+.file-stats .content > span {
+  font-size: 12px;
+  color: var(--slds-g-color-on-surface-3);
+  font-weight: var(--slds-g-font-weight-5);
+}
+
+.file-stats .content .description {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+}
+
+.file-stats .content .description > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-value {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+
+
+
+/* utilities */
+.spin {
+  display: inline-flex;
+  animation: rotate 1s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
