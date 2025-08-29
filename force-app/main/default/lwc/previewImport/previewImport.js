@@ -1,14 +1,28 @@
-import { LightningElement, track } from 'lwc';
+import { api, LightningElement, track } from 'lwc';
 
 import { recordsMock } from './records-mock';
 
 export default class PreviewImport extends LightningElement {
-  @track previewColumns = [
-    { label: "Account Name", fieldName: "Name" },
-    { label: "Account Number", fieldName: "AccountNumber" },
-    { label: "Phone", fieldName: "Phone" },
-  ];
+  @api columnMapping;
+
   @track previewData = recordsMock;
+
+  get totalColumns() {
+    return this.columnMapping.length;
+  }
+
+  get totalMappedColumns() {
+    return this.columnMapping.filter(column => column.field).length;
+  }
+
+  get previewColumns() {
+    return this.columnMapping
+      .filter(column => !!column.field)
+      .map(column => ({
+        label: column.field.label,
+        fieldName: column.field.apiName
+      }));
+  }
 
   handlePreviewImportFinished() {
     this.dispatchEvent(new CustomEvent('previewimportfinished', {}));

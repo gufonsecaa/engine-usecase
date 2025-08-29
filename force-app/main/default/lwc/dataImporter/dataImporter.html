@@ -16,15 +16,23 @@
         </template>
 
         <template lwc:elseif={isMappingColumnsStep}>
-          <c-map-columns onmappingfinished={handleMappingFinished}></c-map-columns>
+          <c-map-columns
+            target-object={targetObject}
+            onmappingfinished={handleMappingFinished}>
+          </c-map-columns>
         </template>
 
         <template lwc:elseif={isPreviewImportStep}>
-          <c-preview-import onpreviewimportfinished={handlePreviewImportFinished}></c-preview-import>
+          <c-preview-import
+            column-mapping={columnMapping}
+            onpreviewimportfinished={handlePreviewImportFinished}>
+          </c-preview-import>
         </template>
 
         <template lwc:elseif={isResultsStep}>
-          <c-import-stats></c-import-stats>
+          <c-import-stats
+            column-mapping={columnMapping}>
+          </c-import-stats>
         </template>
 
       </div>

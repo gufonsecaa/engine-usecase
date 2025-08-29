@@ -1,13 +1,12 @@
 import { api, LightningElement, track } from 'lwc';
 
+import getAvailableSObjectOptions from '@salesforce/apex/DataImporterController.getAvailableSObjectOptions';
+
 export default class SetupImport extends LightningElement {
   @api contentVersionId;
 
   @track targetObject;
-  @track objectOptions = [
-    { value: "Account", label: "Account" },
-    { value: "Lead", label: "Lead" }
-  ];
+  @track objectOptions = [];
 
   get acceptedFormats() {
     return ['.csv'];
@@ -17,9 +16,31 @@ export default class SetupImport extends LightningElement {
     return !this.targetObject;
   }
 
+  connectedCallback() {
+    this.fetchAvailableObjectOptions();
+  }
+
+  async fetchAvailableObjectOptions() {
+    try {
+      const result = await getAvailableSObjectOptions();
+      const options = JSON.parse(result).sort((a, b) => a.label.localeCompare(b.label));
+      this.objectOptions = options;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   handleChange(event) {
     const { value } = event.detail;
     this.targetObject = value;
+
+    // temp
+    this.dispatchEvent(new CustomEvent('setupfinished', {
+      detail: {
+        targetObject: this.targetObject,
+        contentVersionId: this.contentVersionId
+      }
+    }));
   }
 
   handleUploadFinished(event) {

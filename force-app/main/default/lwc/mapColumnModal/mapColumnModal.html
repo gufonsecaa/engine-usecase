@@ -1,0 +1,46 @@
+<template>
+  <lightning-modal-header label="Map Column"></lightning-modal-header>
+  <lightning-modal-body>
+    <div class="mapping-container slds-var-p-vertical_x-large">
+      <div class="row">
+        <div>
+          <div class="slds-form-element__label">CSV Column</div>
+          <div class="slds-input">{content.columnName}</div>
+        </div>
+
+        <div class="icon-column slds-var-p-horizontal_small slds-var-m-top_x-large">
+          <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
+        </div>
+
+        <div class="field-column">
+          <lightning-combobox
+            style="max-width: 300px; width: 100%;"
+            label="Available Fields"
+            value={selectedField}
+            placeholder="Select a field to map"
+            options={options}
+            onchange={handleSelect}>
+          </lightning-combobox>
+        </div>
+      </div>
+
+      <template lwc:if={unmapColum}>
+        <div class="row slds-var-m-top_medium">
+          <div>
+            <div class="title-label">This field will be unmapped</div>
+            <div>{unmapColum}</div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </lightning-modal-body>
+
+  <lightning-modal-footer>
+    <lightning-button
+      variant="brand"
+      label="Confirm"
+      onclick={handleConfirm}>
+    </lightning-button>
+  </lightning-modal-footer>
+</template>

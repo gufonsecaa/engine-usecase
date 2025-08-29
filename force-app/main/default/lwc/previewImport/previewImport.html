@@ -18,7 +18,7 @@
 
           <div>
             <lightning-icon icon-name="utility:data_mapping" size="x-small"></lightning-icon>
-            <span class="slds-var-m-left_xx-small">3 of 10 columns mapped</span>
+            <span class="slds-var-m-left_xx-small">{totalMappedColumns} of {totalColumns} columns mapped</span>
           </div>
         </div>
       </div>
@@ -33,7 +33,6 @@
     <span class="slds-var-m-bottom_small">Showing the first 10 rows</span>
 
     <div class="datatable-preview">
-
       <lightning-datatable
         key-field="AccountNumber"
         data={previewData}
@@ -41,7 +40,6 @@
         show-row-number-column
         hide-checkbox-column>
       </lightning-datatable>
-
     </div>
   </div>
 

@@ -12,6 +12,7 @@ export default class DataImporter extends LightningElement {
 
   @track targetObject;
   @track contentVersionId;
+  @track columnMapping;
 
   get isSetupImportStep() {
     return this.currentStep === STEPS.SETUP_IMPORT;
@@ -43,6 +44,10 @@ export default class DataImporter extends LightningElement {
   }
 
   handleMappingFinished(event) {
+    const { columnMapping } = event.detail;
+
+    this.columnMapping = columnMapping;
+
     this.changeToStep(STEPS.PREVIEW_IMPORT);
   }
 

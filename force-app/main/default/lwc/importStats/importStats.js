@@ -1,3 +1,13 @@
-import { LightningElement } from 'lwc';
+import { api, LightningElement } from 'lwc';
 
-export default class ImportStats extends LightningElement {}
+export default class ImportStats extends LightningElement {
+  @api columnMapping;
+
+  get totalColumns() {
+    return this.columnMapping.length;
+  }
+
+  get totalMappedColumns() {
+    return this.columnMapping.filter(column => column.field).length;
+  }
+}

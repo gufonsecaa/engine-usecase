@@ -7,22 +7,33 @@
     <div class="row">
       <span class="title-label">Your CSV columns</span>
       <span></span>
-      <span class="title-label">Available fields</span>
+      <span class="title-label">Salesforce fields</span>
     </div>
 
     <!-- template for:each -->
-    <div class="row">
-      <div class="slds-input">Company-name</div>
+    <template for:each={columnMapping} for:item="column">
+      <div key={column.csvColumn} class="row">
+        <div class="slds-input">{column.csvColumn}</div>
 
-      <div class="icon-column slds-var-p-horizontal_small">
-        <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
-      </div>
+        <div class="icon-column slds-var-p-horizontal_small">
+          <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
+        </div>
 
-      <div class="field-column">
-        <lightning-button-icon icon-name="utility:data_mapping"></lightning-button-icon>
-        <div class="slds-input">Account Name (Name)</div>
+        <div class="field-column">
+          <lightning-button-icon
+            icon-name="utility:data_mapping"
+            data-column-name={column.csvColumn}
+            onclick={handleMapFieldModal}>
+          </lightning-button-icon>
+          <template lwc:if={column.field}>
+            <div class="slds-input">{column.field.apiName}</div>
+          </template>
+          <template lwc:else>
+            <div class="slds-input slds-text-color_weak" style="font-style: italic;">Not mapped</div>
+          </template>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 
   <div class="footer-content slds-var-m-top_xx-large">
