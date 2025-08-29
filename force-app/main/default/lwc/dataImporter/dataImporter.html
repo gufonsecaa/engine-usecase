@@ -7,180 +7,24 @@
         <lightning-progress-indicator type="base" current-step={currentStep} class="slds-var-m-top_medium slds-var-m-bottom_large">
           <lightning-progress-step label="Import" value="setup-import-step"></lightning-progress-step>
           <lightning-progress-step label="Mapping Columns" value="mapping-columns-step"></lightning-progress-step>
-          <lightning-progress-step label="Preview" value="data-preview-step"></lightning-progress-step>
+          <lightning-progress-step label="Preview Import" value="preview-import-step"></lightning-progress-step>
           <lightning-progress-step label="Results" value="results-step"></lightning-progress-step>
         </lightning-progress-indicator>
 
         <template lwc:if={isSetupImportStep}>
-          <span class="section-title slds-var-m-bottom_medium">
-            Configure Import
-          </span>
-
-          <lightning-combobox
-            field-level-help="Select the data type that will be imported"
-            label="Target Data Type"
-            name="targe-object-combo"
-            options={objectOptions}
-            placeholder="Select an object"
-            value={targetObject}
-            onchange={handleChange}
-            variant="standard"
-            class="slds-var-m-bottom_small"
-            style="max-width: 280px">
-          </lightning-combobox>
-
-          <lightning-file-upload
-            label="Select CSV file"
-            name="file-uploader"
-            accept={acceptedFormats}
-            onuploadfinished={handleUploadFinished}
-            disabled={isTargetObjectNotSelected}>
-          </lightning-file-upload>
+          <c-setup-import onsetupfinished={handleSetupFinished}></c-setup-import>
         </template>
 
         <template lwc:elseif={isMappingColumnsStep}>
-          <span class="section-title slds-var-m-bottom_medium">
-            Mapping Columns
-          </span>
-
-          <div class="mapping-container">
-            <div class="row">
-              <span class="title-label">Your CSV columns</span>
-              <span></span>
-              <span class="title-label">Available fields</span>
-            </div>
-
-            <!-- template for:each -->
-            <div class="row">
-              <div class="slds-input">Company-name</div>
-
-              <div class="icon-column slds-var-p-horizontal_small">
-                <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
-              </div>
-
-              <div class="field-column">
-                <lightning-button-icon icon-name="utility:data_mapping"></lightning-button-icon>
-                <div class="slds-input">Account Name (Name)</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="footer-content slds-var-m-top_xx-large">
-            <lightning-button variant="base" label="Back"></lightning-button>
-            <lightning-button variant="brand" label="Next" class="slds-var-m-left_large"></lightning-button>
-          </div>
+          <c-map-columns onmappingfinished={handleMappingFinished}></c-map-columns>
         </template>
 
-        <template lwc:elseif={isDataPreviewStep}>
-          <span class="section-title slds-var-m-bottom_medium">
-            File Stats
-          </span>
-
-          <div class="file-stats slds-var-m-bottom_medium">
-            <lightning-icon icon-name="doctype:csv" alternative-text="File icon" size="medium"></lightning-icon>
-            <div class="content slds-var-m-left_small">
-              <span>Accounts.csv</span>
-              <div class="description">
-                <span>34KB</span>
-
-                <div>
-                  <lightning-icon icon-name="utility:picklist_choice" size="x-small"></lightning-icon>
-                  <span class="slds-var-m-left_xx-small">10.000 rows</span>
-                </div>
-
-                <div>
-                  <lightning-icon icon-name="utility:data_mapping" size="x-small"></lightning-icon>
-                  <span class="slds-var-m-left_xx-small">3 of 10 columns mapped</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <span class="section-title slds-var-m-bottom_medium">
-            Data Preview
-          </span>
-
-          <div class="data-preview-container">
-            <span class="slds-var-m-bottom_small">Showing the first 10 rows</span>
-
-            <div class="datatable-preview">
-
-              <lightning-datatable
-                key-field="AccountNumber"
-                data={previewData}
-                columns={previewColumns}
-                show-row-number-column
-                hide-checkbox-column>
-              </lightning-datatable>
-
-            </div>
-          </div>
-
-          <div class="footer-content slds-var-m-top_xx-large">
-            <lightning-button variant="base" label="Back"></lightning-button>
-            <lightning-button variant="brand" label="Import Data" class="slds-var-m-left_large"></lightning-button>
-          </div>
+        <template lwc:elseif={isPreviewImportStep}>
+          <c-preview-import onpreviewimportfinished={handlePreviewImportFinished}></c-preview-import>
         </template>
 
         <template lwc:elseif={isResultsStep}>
-          <span class="section-title slds-var-m-bottom_medium">
-            Import Data Summary
-          </span>
-
-          <div class="file-stats slds-var-m-bottom_medium">
-            <lightning-icon icon-name="doctype:csv" alternative-text="File icon" size="medium"></lightning-icon>
-            <div class="content slds-var-m-left_small">
-              <span>Accounts.csv</span>
-              <div class="description">
-                <span>34KB</span>
-
-                <div>
-                  <lightning-icon icon-name="utility:picklist_choice" size="x-small"></lightning-icon>
-                  <span class="slds-var-m-left_xx-small">10.000 rows</span>
-                </div>
-
-                <div>
-                  <lightning-icon icon-name="utility:data_mapping" size="x-small"></lightning-icon>
-                  <span class="slds-var-m-left_xx-small">3 of 10 columns mapped</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <span class="section-title slds-var-m-vertical_medium">
-            Importing Stats
-          </span>
-
-          <div class="stats-item">
-            <div class="title-label">Job Status</div>
-            <div class="stats-value">
-              <div class="spin">
-                <svg class="slds-icon slds-icon-text-default slds-icon_x-small" aria-hidden="true">
-                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#spinner"></use>
-                </svg>
-              </div>
-              <span class="slds-var-m-left_x-small">Running import</span>
-            </div>
-          </div>
-
-          <div class="stats-container slds-var-m-top_medium">
-
-            <div class="stats-item">
-              <div class="title-label">Processed rows</div>
-              <div class="stats-value">800 of 10.000</div>
-            </div>
-
-            <div class="stats-item">
-              <div class="title-label">Success</div>
-              <div class="stats-value">789</div>
-            </div>
-
-            <div class="stats-item">
-              <div class="title-label">Failures</div>
-              <div class="stats-value">11</div>
-            </div>
-          </div>
-
+          <c-import-stats></c-import-stats>
         </template>
 
       </div>

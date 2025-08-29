@@ -1,31 +1,17 @@
 import { LightningElement, track } from 'lwc';
 
-import { recordsMock } from './records-mock'
-
 const STEPS = {
   SETUP_IMPORT: 'setup-import-step',
   MAPPING_COLUMNS: 'mapping-columns-step',
-  DATA_PREVIEW: 'data-preview-step',
+  PREVIEW_IMPORT: 'preview-import-step',
   RESULTS: 'results-step',
 }
 
 export default class DataImporter extends LightningElement {
-  @track currentStep = STEPS.RESULTS;
-
-  @track objectOptions = [
-    { value: "Account", label: "Account" },
-    { value: "Lead", label: "Lead" }
-  ];
+  @track currentStep = STEPS.SETUP_IMPORT;
 
   @track targetObject;
   @track contentVersionId;
-
-  @track previewColumns = [
-    { label: "Account Name", fieldName: "Name" },
-    { label: "Account Number", fieldName: "AccountNumber" },
-    { label: "Phone", fieldName: "Phone" },
-  ];
-  @track previewData = recordsMock;
 
   get isSetupImportStep() {
     return this.currentStep === STEPS.SETUP_IMPORT;
@@ -35,34 +21,32 @@ export default class DataImporter extends LightningElement {
     return this.currentStep === STEPS.MAPPING_COLUMNS;
   }
 
-  get isDataPreviewStep() {
-    return this.currentStep === STEPS.DATA_PREVIEW;
+  get isPreviewImportStep() {
+    return this.currentStep === STEPS.PREVIEW_IMPORT;
   }
 
   get isResultsStep() {
     return this.currentStep === STEPS.RESULTS;
   }
 
-  get isTargetObjectNotSelected() {
-    return !this.targetObject;
-  }
-
-  get acceptedFormats() {
-    return ['.csv'];
-  }
-
   changeToStep(stepName) {
     this.currentStep = stepName;
   }
 
-  handleChange(event) {
-    const { value } = event.detail;
-    this.targetObject = value;
+  handleSetupFinished(event) {
+    const { targetObject, contentVersionId } = event.detail;
+
+    this.targetObject = targetObject;
+    this.contentVersionId = contentVersionId;
+
+    this.changeToStep(STEPS.MAPPING_COLUMNS);
   }
 
-  handleUploadFinished(event) {
-    const { files } = event.detail;
-    this.contentVersionId = files[0].contentVersionId;
-    this.changeToStep(STEPS.MAPPING_COLUMNS);
+  handleMappingFinished(event) {
+    this.changeToStep(STEPS.PREVIEW_IMPORT);
+  }
+
+  handlePreviewImportFinished(event) {
+    this.changeToStep(STEPS.RESULTS);
   }
 }

@@ -1,0 +1,61 @@
+<template>
+  <div class="section-title slds-var-m-bottom_medium">
+    Import Data Summary
+  </div>
+
+  <div class="slds-var-m-bottom_medium">
+    <div class="file-stats">
+      <lightning-icon icon-name="doctype:csv" alternative-text="File icon" size="medium"></lightning-icon>
+      <div class="content slds-var-m-left_small">
+        <span>Accounts.csv</span>
+        <div class="description slds-var-m-top_xx-small">
+          <span>34KB</span>
+
+          <div>
+            <lightning-icon icon-name="utility:picklist_choice" size="x-small"></lightning-icon>
+            <span class="slds-var-m-left_xx-small">10.000 rows</span>
+          </div>
+
+          <div>
+            <lightning-icon icon-name="utility:data_mapping" size="x-small"></lightning-icon>
+            <span class="slds-var-m-left_xx-small">3 of 10 columns mapped</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title slds-var-m-vertical_medium">
+    Importing Stats
+  </div>
+
+  <div class="stats-item">
+    <div class="title-label">Job Status</div>
+    <div class="stats-value">
+      <div class="spin">
+        <svg class="slds-icon slds-icon-text-default slds-icon_x-small" aria-hidden="true">
+          <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#spinner"></use>
+        </svg>
+      </div>
+      <span class="slds-var-m-left_x-small">Running import</span>
+    </div>
+  </div>
+
+  <div class="stats-container slds-var-m-top_medium">
+
+    <div class="stats-item">
+      <div class="title-label">Processed rows</div>
+      <div class="stats-value">800 of 10.000</div>
+    </div>
+
+    <div class="stats-item">
+      <div class="title-label">Success</div>
+      <div class="stats-value">789</div>
+    </div>
+
+    <div class="stats-item">
+      <div class="title-label">Failures</div>
+      <div class="stats-value">11</div>
+    </div>
+  </div>
+</template>

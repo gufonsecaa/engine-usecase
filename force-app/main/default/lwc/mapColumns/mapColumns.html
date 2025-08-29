@@ -1,0 +1,37 @@
+<template>
+  <div class="section-title slds-var-m-bottom_medium">
+    Mapping Columns
+  </div>
+
+  <div class="mapping-container">
+    <div class="row">
+      <span class="title-label">Your CSV columns</span>
+      <span></span>
+      <span class="title-label">Available fields</span>
+    </div>
+
+    <!-- template for:each -->
+    <div class="row">
+      <div class="slds-input">Company-name</div>
+
+      <div class="icon-column slds-var-p-horizontal_small">
+        <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
+      </div>
+
+      <div class="field-column">
+        <lightning-button-icon icon-name="utility:data_mapping"></lightning-button-icon>
+        <div class="slds-input">Account Name (Name)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-content slds-var-m-top_xx-large">
+    <lightning-button variant="base" label="Back"></lightning-button>
+    <lightning-button
+      variant="brand"
+      label="Preview Import"
+      class="slds-var-m-left_large"
+      onclick={handleMappingFinished}>
+    </lightning-button>
+  </div>
+</template>
