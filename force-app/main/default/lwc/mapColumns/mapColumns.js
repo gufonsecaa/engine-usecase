@@ -8,6 +8,7 @@ import MapColumnModal from 'c/mapColumnModal';
 export default class MapColumns extends LightningElement {
 
   @api targetObject = null;
+  @api contentVersionId = null;
 
   @track allFields = [];
   @track columnMapping = [];
@@ -41,7 +42,7 @@ export default class MapColumns extends LightningElement {
 
   async fetchCSVColumnNames() {
     try {
-      const result = await getCSVColumnNames();
+      const result = await getCSVColumnNames({ contentVersionId: this.contentVersionId });
       const csvColumns = JSON.parse(result);
 
       this.columnMapping = csvColumns.map(column => ({

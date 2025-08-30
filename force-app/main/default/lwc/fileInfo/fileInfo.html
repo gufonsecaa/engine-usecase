@@ -1,0 +1,21 @@
+<template>
+  <div class="file-stats">
+    <lightning-icon icon-name="doctype:csv" alternative-text="File icon" size="medium"></lightning-icon>
+    <div class="content slds-var-m-left_small">
+      <span>{file.fileName}</span>
+      <div class="description slds-var-m-top_xx-small">
+        <span>{file.fileSize}</span>
+
+        <div>
+          <lightning-icon icon-name="utility:picklist_choice" size="x-small"></lightning-icon>
+          <span class="slds-var-m-left_xx-small">{file.numberOfLines} rows</span>
+        </div>
+
+        <div>
+          <lightning-icon icon-name="utility:data_mapping" size="x-small"></lightning-icon>
+          <span class="slds-var-m-left_xx-small">{totalMappedColumns} of {totalColumns} columns mapped</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

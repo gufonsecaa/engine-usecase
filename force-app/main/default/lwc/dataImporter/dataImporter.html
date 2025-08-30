@@ -18,19 +18,23 @@
         <template lwc:elseif={isMappingColumnsStep}>
           <c-map-columns
             target-object={targetObject}
+            content-version-id={contentVersionId}
             onmappingfinished={handleMappingFinished}>
           </c-map-columns>
         </template>
 
         <template lwc:elseif={isPreviewImportStep}>
           <c-preview-import
+            content-version-id={contentVersionId}
             column-mapping={columnMapping}
+            file-info={fileInfo}
             onpreviewimportfinished={handlePreviewImportFinished}>
           </c-preview-import>
         </template>
 
         <template lwc:elseif={isResultsStep}>
           <c-import-stats
+            file-info={fileInfo}
             column-mapping={columnMapping}>
           </c-import-stats>
         </template>

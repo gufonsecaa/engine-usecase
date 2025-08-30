@@ -99,12 +99,10 @@ public with sharing class CSVReader implements Iterable<List<String>>, Iterator<
 				Integer lastIndex = currentValue.length() - 1;
 				currentValue = currentValue.substring(1, lastIndex);
 
-				//Does it contain double quoted quotes? I.e. Escaped double quotes
-                		Integer doubleQuotedQuotesIndex = currentValue.indexOf(DOUBLE_QUOTE);
-                		if(doubleQuotedQuotesIndex >= 0) {
-                    			// Replace double quoted quotes with double quotes.
-                    			currentValue = currentValue.replace(DOUBLE_QUOTE, QUOTE);
-                		}
+                Integer doubleQuotedQuotesIndex = currentValue.indexOf(DOUBLE_QUOTE);
+                if(doubleQuotedQuotesIndex >= 0) {
+                    currentValue = currentValue.replace(DOUBLE_QUOTE, QUOTE);
+                }
 
 				tmpValues.add(currentValue);
 				if (foundAt == nlAt) {
@@ -116,4 +114,14 @@ public with sharing class CSVReader implements Iterable<List<String>>, Iterator<
 		values.addAll(tmpValues);
 		return position;
 	}
+
+    public Integer countLineBreaks() {
+        Integer countLines = 0;
+        for (Integer i=0; i<this.csvString.length(); i++) {
+            if (this.csvString.substring(i, i+1) == LF) {
+                countLines++;
+            }
+        }
+        return countLines;
+    }
 }

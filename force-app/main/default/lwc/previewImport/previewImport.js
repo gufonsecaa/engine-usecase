@@ -1,19 +1,13 @@
 import { api, LightningElement, track } from 'lwc';
 
-import { recordsMock } from './records-mock';
+import getPreviewRows from '@salesforce/apex/DataImporterController.getPreviewRows';
 
 export default class PreviewImport extends LightningElement {
+  @api contentVersionId;
   @api columnMapping;
+  @api fileInfo;
 
-  @track previewData = recordsMock;
-
-  get totalColumns() {
-    return this.columnMapping.length;
-  }
-
-  get totalMappedColumns() {
-    return this.columnMapping.filter(column => column.field).length;
-  }
+  @track previewData = [];
 
   get previewColumns() {
     return this.columnMapping
@@ -24,7 +18,44 @@ export default class PreviewImport extends LightningElement {
       }));
   }
 
+  connectedCallback() {
+    this.fetchPreviewRows();
+  }
+
+  async fetchPreviewRows() {
+    try {
+      const results = await getPreviewRows({
+        contentVersionId: this.contentVersionId
+      });
+
+      this.previewData = this.preparePreviewData(JSON.parse(results));
+    } catch (error) {
+      this.previewData = null;
+      console.error(error);
+    }
+  }
+
   handlePreviewImportFinished() {
     this.dispatchEvent(new CustomEvent('previewimportfinished', {}));
+  }
+
+  preparePreviewData(rows) {
+    let previewData = [];
+
+    rows.forEach((row) => {
+      let rowData = {};
+      row.forEach((columnValue, index) => {
+        const mappedColumn = this.columnMapping[index];
+        if (mappedColumn.field) {
+          rowData = {
+            ...rowData,
+            [mappedColumn.field.apiName]: columnValue
+          };
+        }
+      })
+      previewData.push(rowData);
+    });
+
+    return previewData;
   }
 }

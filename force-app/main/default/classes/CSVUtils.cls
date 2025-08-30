@@ -1,7 +1,11 @@
 public with sharing class CSVUtils {
     public static ContentVersion getContentVersionById(String contentVersionId) {
         ContentVersion contentVersion = [
-            SELECT VersionData, FileExtension, ContentSize
+            SELECT
+                Title,
+                FileExtension,
+                VersionData,
+                ContentSize
             FROM ContentVersion
             WHERE Id = :contentVersionId
             LIMIT 1
@@ -23,5 +27,11 @@ public with sharing class CSVUtils {
         List<List<String>> rows = CSVReader.read(contentVersion.VersionData.toString(), numberOfRows, 1);
 
         return rows;
+    }
+
+    public static Integer getNumberOfLines(ContentVersion contentVersion) {
+        CSVReader csv = new CSVReader(contentVersion.VersionData.toString());
+        Integer numberOfLines = csv.countLineBreaks();
+        return numberOfLines;
     }
 }

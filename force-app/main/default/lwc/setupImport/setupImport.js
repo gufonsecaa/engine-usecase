@@ -33,14 +33,6 @@ export default class SetupImport extends LightningElement {
   handleChange(event) {
     const { value } = event.detail;
     this.targetObject = value;
-
-    // temp
-    this.dispatchEvent(new CustomEvent('setupfinished', {
-      detail: {
-        targetObject: this.targetObject,
-        contentVersionId: this.contentVersionId
-      }
-    }));
   }
 
   handleUploadFinished(event) {

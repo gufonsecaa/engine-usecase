@@ -19,8 +19,37 @@ public with sharing class DataImporterController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static String getCSVColumnNames() {
-        return JSON.serialize(getColumnNames());
+    public static String getCSVColumnNames(String contentVersionId) {
+        return JSON.serialize(CSVUtils.getHeaderColumns(contentVersionId));
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static String getPreviewRows(String contentVersionId) {
+        try {
+            List<List<String>> first10Rows = CSVUtils.getRowsFromCSV(contentVersionId, 10);
+            return JSON.serialize(first10Rows);
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String getFileInfo(String contentVersionId) {
+        try {
+            ContentVersion contentVersion = CSVUtils.getContentVersionById(contentVersionId);
+
+            Integer numberOfLines = CSVUtils.getNumberOfLines(contentVersion);
+
+            CSVFileInfo fileInfo = new CSVFileInfo();
+            fileInfo.fileSize = contentVersion.ContentSize;
+            fileInfo.fileName = contentVersion.Title + '.' + contentVersion.FileExtension;
+            fileInfo.numberOfLines = numberOfLines;
+
+            return JSON.serialize(fileInfo);
+
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
     }
 
     // DML Utils
@@ -44,13 +73,14 @@ public with sharing class DataImporterController {
         return results;
     }
 
-    // CSV Utils
-    public static List<String> getColumnNames() {
-        return new List<String>{'Company-name', 'Phone', 'Account Identification'};
-    }
-
     public class SObjectOption {
         String label;
         String value;
+    }
+
+    public class CSVFileInfo {
+        public String fileName;
+        public Integer fileSize;
+        public Integer numberOfLines;
     }
 }

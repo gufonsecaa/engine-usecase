@@ -1,4 +1,6 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
+
+import getFileInfo from '@salesforce/apex/DataImporterController.getFileInfo';
 
 const STEPS = {
   SETUP_IMPORT: 'setup-import-step',
@@ -14,6 +16,8 @@ export default class DataImporter extends LightningElement {
   @track contentVersionId;
   @track columnMapping;
 
+  @track fileInfo;
+
   get isSetupImportStep() {
     return this.currentStep === STEPS.SETUP_IMPORT;
   }
@@ -28,6 +32,20 @@ export default class DataImporter extends LightningElement {
 
   get isResultsStep() {
     return this.currentStep === STEPS.RESULTS;
+  }
+
+  @wire(getFileInfo, { contentVersionId: '$contentVersionId' })
+  wiredFileInfo({ data, error }) {
+    if (error) {
+      console.log('Error to load file data.');
+      console.error(error);
+      return;
+    }
+
+    if (data) {
+      const file = JSON.parse(data);
+      this.fileInfo = file;
+    }
   }
 
   changeToStep(stepName) {
