@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from 'lwc';
 
 import getFileInfo from '@salesforce/apex/DataImporterController.getFileInfo';
+import saveImportDraft from '@salesforce/apex/DataImporterController.saveImportDraft';
 
 const STEPS = {
   SETUP_IMPORT: 'setup-import-step',
@@ -17,6 +18,7 @@ export default class DataImporter extends LightningElement {
   @track columnMapping;
 
   @track fileInfo;
+  @track importRecordId;
 
   get isSetupImportStep() {
     return this.currentStep === STEPS.SETUP_IMPORT;
@@ -69,7 +71,27 @@ export default class DataImporter extends LightningElement {
     this.changeToStep(STEPS.PREVIEW_IMPORT);
   }
 
-  handlePreviewImportFinished(event) {
+  async handlePreviewImportFinished(event) {
+    await this.saveImportDraft();
     this.changeToStep(STEPS.RESULTS);
+  }
+
+  async saveImportDraft() {
+    try {
+      const importDraft = {
+        contentVersionId: this.contentVersionId,
+        targetObjectName: this.targetObject,
+        columnMapping: JSON.stringify(this.columnMapping),
+        upsertExternalIdField: null,
+      };
+
+      const result = await saveImportDraft({
+        draftDataString: JSON.stringify(importDraft)
+      });
+
+      this.importRecordId = result;
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

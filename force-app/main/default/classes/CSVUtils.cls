@@ -5,7 +5,8 @@ public with sharing class CSVUtils {
                 Title,
                 FileExtension,
                 VersionData,
-                ContentSize
+                ContentSize,
+                ContentDocumentId
             FROM ContentVersion
             WHERE Id = :contentVersionId
             LIMIT 1
@@ -33,5 +34,14 @@ public with sharing class CSVUtils {
         CSVReader csv = new CSVReader(contentVersion.VersionData.toString());
         Integer numberOfLines = csv.countLineBreaks();
         return numberOfLines;
+    }
+
+    public static ContentDocumentLink createDocumentLink(Id contentDocumentId, Id importRecordId) {
+        ContentDocumentLink link = new ContentDocumentLink(
+            ContentDocumentId = contentDocumentId.toString(),
+            LinkedEntityId = importRecordId.toString()
+        );
+
+        return link;
     }
 }

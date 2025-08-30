@@ -52,6 +52,34 @@ public with sharing class DataImporterController {
         }
     }
 
+    @AuraEnabled(cacheable=false)
+    public static String saveImportDraft(String draftDataString) {
+        try {
+            ImportDraftDTO draftData = (ImportDraftDTO) JSON.deserialize(draftDataString, ImportDraftDTO.class);
+            Import__c draftImport = createDraftImport(draftData);
+            insert draftImport;
+
+            ContentVersion contentVersion = CSVUtils.getContentVersionById(draftData.contentVersionId);
+            ContentDocumentLink csvImportLink = CSVUtils.createDocumentLink(contentVersion.ContentDocumentId, draftImport.Id);
+            insert csvImportLink;
+
+            return draftImport.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    public static Import__c createDraftImport(ImportDraftDTO data) {
+        Import__c importData = new Import__c();
+        importData.ContentVersionId__c = data.contentVersionId;
+        importData.TargetObject__c = data.targetObjectName;
+        importData.ColumnMap__c = data.columnMapping;
+        importData.TotalRows__c = data.numberOfLines;
+        importData.Status__c = 'Draft';
+
+        return importData;
+    }
+
     // DML Utils
     public static Map<String, String> getAvailableSObjectsToPerformDML() {
         Map<String, SObjectType> allSObjectTypes = Schema.getGlobalDescribe();
@@ -81,6 +109,14 @@ public with sharing class DataImporterController {
     public class CSVFileInfo {
         public String fileName;
         public Integer fileSize;
+        public Integer numberOfLines;
+    }
+
+    public class ImportDraftDTO {
+        public String contentVersionId;
+        public String targetObjectName;
+        public String columnMapping;
+        public String upsertExternalIdField;
         public Integer numberOfLines;
     }
 }
