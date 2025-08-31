@@ -69,8 +69,34 @@ public with sharing class DataImporterController {
         }
     }
 
+    @AuraEnabled(cacheable=false)
+    public static string getImportRecordData(String importRecordId) {
+        try {
+            Import__c importRecord = [
+                SELECT Id, Name, Status__c, TotalRows__c, ProcessedRows__c, SuccessRows__c, ErrorRows__c
+                FROM Import__c
+                WHERE Id = :importRecordId LIMIT 1
+            ];
+
+            ImportRecord importData = new ImportRecord();
+            importData.id = importRecord.Id;
+            importData.name = importRecord.Name;
+            importData.status = importRecord.Status__c;
+            importData.numberOfLines = (Integer) importRecord.TotalRows__c;
+            importData.processedRows = (Integer) importRecord.ProcessedRows__c;
+            importData.successRows = (Integer) importRecord.SuccessRows__c;
+            importData.errorRows = (Integer) importRecord.ErrorRows__c;
+
+            return JSON.serialize(importData);
+
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     public static Import__c createDraftImport(ImportDraftDTO data) {
         Import__c importData = new Import__c();
+        importData.Name = data.targetObjectName + ' | ' + data.fileName;
         importData.ContentVersionId__c = data.contentVersionId;
         importData.TargetObject__c = data.targetObjectName;
         importData.ColumnMap__c = data.columnMapping;
@@ -113,10 +139,21 @@ public with sharing class DataImporterController {
     }
 
     public class ImportDraftDTO {
+        public String fileName;
         public String contentVersionId;
         public String targetObjectName;
         public String columnMapping;
         public String upsertExternalIdField;
         public Integer numberOfLines;
+    }
+
+    public class ImportRecord {
+        public String id;
+        public String name;
+        public String status;
+        public Integer numberOfLines;
+        public Integer processedRows;
+        public Integer successRows;
+        public Integer errorRows;
     }
 }

@@ -79,10 +79,12 @@ export default class DataImporter extends LightningElement {
   async saveImportDraft() {
     try {
       const importDraft = {
+        fileName: this.fileInfo.fileName,
         contentVersionId: this.contentVersionId,
         targetObjectName: this.targetObject,
         columnMapping: JSON.stringify(this.columnMapping),
         upsertExternalIdField: null,
+        numberOfLines: this.fileInfo.numberOfLines
       };
 
       const result = await saveImportDraft({

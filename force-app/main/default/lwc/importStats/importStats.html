@@ -7,37 +7,64 @@
     <c-file-info file={fileInfo} column-mapping={columnMapping}></c-file-info>
   </div>
 
-  <div class="section-title slds-var-m-vertical_medium">
-    Importing Stats
-  </div>
+  <template lwc:if={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="xx-small" variant="base"></lightning-spinner>
+  </template>
 
-  <div class="stats-item slds-var-m-top_small">
-    <div class="title-label">Job Status</div>
-    <div class="stats-value">
-      <div class="spin">
-        <svg class="slds-icon slds-icon-text-default slds-icon_x-small" aria-hidden="true">
-          <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#spinner"></use>
-        </svg>
+  <template lwc:if={importData}>
+    <div class="section-title slds-var-m-vertical_medium">
+      Importing Stats
+    </div>
+
+    <div class="stats-container slds-var-m-top_small">
+      <div class="stats-item">
+        <div class="title-label">Job Status</div>
+        <template lwc:if={isProcessingStatus}>
+          <div class="stats-value">
+            <div class="spin">
+              <svg class="slds-icon slds-icon-text-default slds-icon_x-small" aria-hidden="true">
+                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#spinner"></use>
+              </svg>
+            </div>
+            <span class="slds-var-m-left_x-small">Processing</span>
+          </div>
+        </template>
+        <template lwc:else>
+          <div class="stats-value">
+            <span class="slds-var-m-left_x-small">{importData.status}</span>
+          </div>
+        </template>
       </div>
-      <span class="slds-var-m-left_x-small">Running import</span>
-    </div>
-  </div>
 
-  <div class="stats-container slds-var-m-top_large">
-
-    <div class="stats-item">
-      <div class="title-label">Processed rows</div>
-      <div class="stats-value">800 of 10.000</div>
-    </div>
-
-    <div class="stats-item">
-      <div class="title-label">Success</div>
-      <div class="stats-value">789</div>
+      <template lwc:if={isDraftStatus}>
+        <div class="stats-item">
+          <lightning-button
+            icon-name="utility:play"
+            icon-position="right"
+            variant="brand"
+            label="Start import"
+            onclick={handleStartImport}>
+          </lightning-button>
+        </div>
+      </template>
     </div>
 
-    <div class="stats-item">
-      <div class="title-label">Failures</div>
-      <div class="stats-value">11</div>
+    <div class="stats-container slds-var-m-top_large">
+      <div class="stats-item">
+        <div class="title-label">Processed rows</div>
+        <div class="stats-value">{importData.processedRows} of {importData.numberOfLines}</div>
+      </div>
+
+      <div class="stats-item">
+        <div class="title-label">Success</div>
+        <div class="stats-value">{importData.successRows}</div>
+      </div>
+
+      <div class="stats-item">
+        <div class="title-label">Errors</div>
+        <div class="stats-value">{importData.errorRows}</div>
+      </div>
     </div>
-  </div>
+  </template>
+
 </template>
