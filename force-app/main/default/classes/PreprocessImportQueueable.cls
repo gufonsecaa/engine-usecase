@@ -46,6 +46,7 @@ public with sharing class PreprocessImportQueueable implements Queueable {
             chunk.Import__c = importRecord.Id;
             chunk.Payload__c = joinResult.payload;
             chunk.RowStartIndex__c = 2 + made;
+            chunk.Status__c = 'Pending';
             chunks.add(chunk);
 
             made += joinResult.linesUsed;
@@ -53,15 +54,7 @@ public with sharing class PreprocessImportQueueable implements Queueable {
 
         insert chunks;
 
-        importRecord.Status__c = 'Processing';
-        update importRecord;
-
-        // TODO: CALL BATCH
-
-        ImportProgress__e progressEvent = new ImportProgress__e();
-        progressEvent.Status__c = importRecord.Status__c;
-        progressEvent.ImportId__c = importRecord.Id;
-        EventBus.publish(progressEvent);
+        Database.executeBatch(new ImportProcessBatch(importRecord.Id), 1);
     }
 
     private static void failImport(Import__c importRecord, String message) {

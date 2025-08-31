@@ -1,11 +1,5 @@
 import { api, LightningElement, track } from 'lwc';
-import {
-    subscribe,
-    unsubscribe,
-    onError,
-    setDebugFlag,
-    isEmpEnabled,
-} from 'lightning/empApi';
+import { subscribe, unsubscribe, onError, } from 'lightning/empApi';
 
 import getImportRecordData from '@salesforce/apex/DataImporterController.getImportRecordData';
 import startImport from '@salesforce/apex/DataImporterController.startImport';
@@ -73,9 +67,11 @@ export default class ImportStats extends LightningElement {
       const { payload } = response.data;
       const importData = this.importData;
       if (this.importData.id === payload.ImportId__c) {
-        if (payload.Status__c) {
-          importData.status = payload.Status__c;
-        }
+        if (payload.Status__c) importData.status = payload.Status__c;
+        if (payload.TotalProcessed__c) importData.processedRows = payload.TotalProcessed__c;
+        if (payload.TotalSuccess__c) importData.successRows = payload.TotalSuccess__c;
+        if (payload.TotalErrors__c) importData.errorRows = payload.TotalErrors__c;
+
         this.importData = importData;
       }
     };
