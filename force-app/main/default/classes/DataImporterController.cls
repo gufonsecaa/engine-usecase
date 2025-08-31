@@ -38,7 +38,7 @@ public with sharing class DataImporterController {
         try {
             ContentVersion contentVersion = CSVUtils.getContentVersionById(contentVersionId);
 
-            Integer numberOfLines = CSVUtils.getNumberOfLines(contentVersion);
+            Integer numberOfLines = CSVUtils.getNumberOfLines(contentVersion) - 1;
 
             CSVFileInfo fileInfo = new CSVFileInfo();
             fileInfo.fileSize = contentVersion.ContentSize;
