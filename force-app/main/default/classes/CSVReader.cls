@@ -122,6 +122,57 @@ public with sharing class CSVReader implements Iterable<List<String>>, Iterator<
                 countLines++;
             }
         }
+        if (!this.csvString.endsWith(LF)) {
+            countLines++;
+        }
         return countLines;
+    }
+
+    public List<String> sliceRawLines(Integer size, Integer offset) {
+        List<String> output = new List<String>();
+        if (size == null || size <= 0) return output;
+        if (offset == null || offset < 0) offset = 0;
+
+        Integer lineCount = 0;
+        Integer start = 0;
+
+        for (Integer i = 0; i < csvString.length(); i++) {
+            if (csvString.substring(i, i+1) == LF) {
+                if (lineCount >= offset && output.size() < size) {
+                    output.add(csvString.substring(start, i));
+                }
+                lineCount++;
+                start = i + 1;
+                if (output.size() == size) break;
+            }
+        }
+        if (output.size() < size && start < csvString.length()) {
+            if (lineCount >= offset) output.add(csvString.substring(start));
+        }
+        return output;
+    }
+
+    public JoinResult joinUntilLimit(List<String> lines, Integer maxChars) {
+        if (lines == null || lines.isEmpty()) return new JoinResult('', 0);
+
+        List<String> parts = new List<String>();
+        Integer used = 0, usedLines = 0;
+
+        for (Integer i = 0; i < lines.size(); i++) {
+            String candidate = (i == 0) ? lines[i] : '\n' + lines[i];
+            if (used + candidate.length() > maxChars) break;
+
+            parts.add(candidate);
+            used += candidate.length();
+            usedLines++;
+        }
+
+        return new JoinResult(String.join(parts, ''), usedLines);
+    }
+
+    public class JoinResult {
+        public String payload;
+        public Integer linesUsed;
+        public JoinResult(String p, Integer n) { payload = p; linesUsed = n; }
     }
 }

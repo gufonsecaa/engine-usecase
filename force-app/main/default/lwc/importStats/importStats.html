@@ -31,22 +31,10 @@
         </template>
         <template lwc:else>
           <div class="stats-value">
-            <span class="slds-var-m-left_x-small">{importData.status}</span>
+            <span>{importData.status}</span>
           </div>
         </template>
       </div>
-
-      <template lwc:if={isDraftStatus}>
-        <div class="stats-item">
-          <lightning-button
-            icon-name="utility:play"
-            icon-position="right"
-            variant="brand"
-            label="Start import"
-            onclick={handleStartImport}>
-          </lightning-button>
-        </div>
-      </template>
     </div>
 
     <div class="stats-container slds-var-m-top_large">
@@ -64,6 +52,18 @@
         <div class="title-label">Errors</div>
         <div class="stats-value">{importData.errorRows}</div>
       </div>
+
+      <template lwc:if={isDraftStatus}>
+        <div class="stats-item">
+          <lightning-button
+            icon-name="utility:play"
+            icon-position="right"
+            variant="brand"
+            label="Start import"
+            onclick={handleStartImport}>
+          </lightning-button>
+        </div>
+      </template>
     </div>
   </template>
 

@@ -94,6 +94,28 @@ public with sharing class DataImporterController {
         }
     }
 
+    @AuraEnabled
+    public static void startImport(String importRecordId) {
+        try {
+            Import__c importData = new Import__c(
+                Id = importRecordId,
+                Status__c = 'Queued'
+            );
+            update importData;
+
+            PreprocessImportQueueable queueable = new PreprocessImportQueueable(importRecordId);
+            System.enqueueJob(queueable);
+
+            ImportProgress__e progressEvent = new ImportProgress__e();
+            progressEvent.Status__c = importData.Status__c;
+            progressEvent.ImportId__c = importRecordId;
+            EventBus.publish(progressEvent);
+
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     public static Import__c createDraftImport(ImportDraftDTO data) {
         Import__c importData = new Import__c();
         importData.Name = data.targetObjectName + ' | ' + data.fileName;
