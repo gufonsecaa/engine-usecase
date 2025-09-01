@@ -21,7 +21,6 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
     }
 
     public void execute(Database.BatchableContext bc, List<ImportChunk__c> scope) {
-        System.debug('scope.size():: ' + scope.size());
         if (scope.isEmpty()) return;
 
         ImportChunk__c currentChunk = scope[0];
@@ -50,8 +49,21 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
 
         Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(targetObjectName);
         Map<String, Schema.SObjectField> sObjectFields = sObjectType.getDescribe().fields.getMap();
-        // trativa de erro:
-        Schema.SObjectField fieldReferenceUpdate = sObjectFields.get(fieldReferenceNameUpdate);
+
+        Schema.SObjectField fieldReferenceUpdate;
+        if (sObjectFields.containsKey(fieldReferenceNameUpdate)) {
+            fieldReferenceUpdate = sObjectFields.get(fieldReferenceNameUpdate);
+        } else {
+            importRecord.Status__c = 'Failed';
+            //TODO: importRecord.ErrorMessage__c = 'Failed';
+            update importRecord;
+
+            ImportProgress__e progressEvent = new ImportProgress__e();
+            progressEvent.Status__c = importRecord.Status__c;
+            progressEvent.ImportId__c = importRecord.Id;
+            //TODO: progressEvent.ErrorMessage__c = 'Failed';
+            EventBus.publish(progressEvent);
+        }
 
         List<List<String>> fieldsList = (List<List<String>>) JSON.deserialize(
             importRecord.ColumnMap__c,
@@ -82,6 +94,8 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         Integer successRowsCount = 0;
         Integer errorRowsCount = 0;
 
+        List<ImportRowError__c> importErrors = new List<ImportRowError__c>();
+
         if (!records.isEmpty()) {
             SObjectAccessDecision accessDecision = Security.stripInaccessible(AccessType.UPSERTABLE, records);
             List<SObject> safeRecords = (List<SObject>) accessDecision.getRecords();
@@ -92,9 +106,25 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
                 if (upsertResult[i].isSuccess()) {
                     successRowsCount++;
                 } else {
+                    Integer csvRowNumber = (Integer) currentChunk.RowStartIndex__c + i;
+                    String errorMessage = '';
+                    for (Database.Error error : upsertResult[i].getErrors()) {
+                        errorMessage += error.message;
+                    }
+
+                    ImportRowError__c importError = createImportRowError(
+                        rows[i],
+                        errorMessage,
+                        csvRowNumber,
+                        importRecord.Id
+                    );
+                    importErrors.add(importError);
+
                     errorRowsCount++;
                 }
             }
+
+            if (!importErrors.isEmpty()) insert importErrors;
 
             importRecord.ProcessedRows__c = (importRecord.ProcessedRows__c == null ? 0 : importRecord.ProcessedRows__c) + rows.size();
             importRecord.SuccessRows__c = (importRecord.SuccessRows__c == null ? 0 : importRecord.SuccessRows__c) + successRowsCount;
@@ -123,7 +153,8 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         ];
 
         String finalStatus = 'Completed';
-        if (importRecord.ErrorRows__c != null && importRecord.ErrorRows__c > 0) {
+        Boolean hasErrors = importRecord.ErrorRows__c != null && importRecord.ErrorRows__c > 0;
+        if (hasErrors) {
             finalStatus = 'CompletedWithErrors';
         }
 
@@ -134,6 +165,10 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         progressEvent.ImportId__c = importRecord.Id;
         progressEvent.Status__c = finalStatus;
         EventBus.publish(progressEvent);
+
+        if (hasErrors) {
+            Database.executeBatch(new ErrorCSVBuilderBatch(this.importRecordId), 200);
+        }
     }
 
     private static SObject transformRow(List<String> row, String targetObjectName, List<List<String>> fieldsList) {
@@ -149,6 +184,15 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         }
 
         return rowRecord;
+    }
+
+    private static ImportRowError__c createImportRowError(List<String> row, String errorMessage, Integer rowNumber, Id importRecordId) {
+        return new ImportRowError__c(
+            Import__c = importRecordId,
+            RowNumber__c = rowNumber,
+            RawRow__c = String.join(row, ','),
+            Message__c = errorMessage
+        );
     }
 
     private static void publishProgress(Import__c importRecord, Integer totalProcessed, Integer totalSuccess, Integer totalErrors) {
