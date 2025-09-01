@@ -121,6 +121,7 @@ public with sharing class DataImporterController {
         importData.Name = data.targetObjectName + ' | ' + data.fileName;
         importData.ContentVersionId__c = data.contentVersionId;
         importData.TargetObject__c = data.targetObjectName;
+        importData.FieldReferenceUpdate__c = data.fieldReferenceUpdate;
         importData.ColumnMap__c = data.columnMapping;
         importData.TotalRows__c = data.numberOfLines;
         importData.Status__c = 'Draft';
@@ -164,8 +165,8 @@ public with sharing class DataImporterController {
         public String fileName;
         public String contentVersionId;
         public String targetObjectName;
+        public String fieldReferenceUpdate;
         public String columnMapping;
-        public String upsertExternalIdField;
         public Integer numberOfLines;
     }
 

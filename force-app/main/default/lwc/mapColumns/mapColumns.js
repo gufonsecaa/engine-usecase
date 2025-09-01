@@ -13,6 +13,30 @@ export default class MapColumns extends LightningElement {
   @track allFields = [];
   @track columnMapping = [];
 
+  @track selectedFieldReferenceUpdate;
+
+  get fieldReferenceUpdateOptions() {
+    if (this.columnMapping.length === 0) return null;
+
+    const options = this.columnMapping
+      .filter((column) => {
+        if (column.field) {
+          if (column.field.externalId && column.field.unique) {
+            return true;
+          }
+        }
+        return false;
+      })
+      .map((column) => ({
+        label: `${column.field.label} (${column.field.apiName})`,
+        value: column.field.apiName
+      }));
+
+    if (options.length === 0) return null;
+
+    return options;
+  }
+
   @wire(getObjectInfo, { objectApiName: '$targetObject' })
   wiredObjectInfo({ data, error }) {
     if (error) {
@@ -90,8 +114,14 @@ export default class MapColumns extends LightningElement {
   handleMappingFinished() {
     this.dispatchEvent(new CustomEvent('mappingfinished', {
       detail: {
-        columnMapping: this.columnMapping
+        columnMapping: this.columnMapping,
+        fieldReferenceUpdate: this.selectedFieldReferenceUpdate
       }
     }));
+  }
+
+  handleChangeFieldReferenceUpdate(event) {
+    const { value } = event.detail;
+    this.selectedFieldReferenceUpdate = value;
   }
 }

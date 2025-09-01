@@ -25,7 +25,7 @@
             onclick={handleMapFieldModal}>
           </lightning-button-icon>
           <template lwc:if={column.field}>
-            <div class="slds-input">{column.field.apiName}</div>
+            <div class="slds-input">{column.field.label} ({column.field.apiName})</div>
           </template>
           <template lwc:else>
             <div class="slds-input slds-text-color_weak" style="font-style: italic;">Not mapped</div>
@@ -34,6 +34,23 @@
       </div>
     </template>
   </div>
+
+  <template lwc:if={fieldReferenceUpdateOptions}>
+    <div class="slds-var-m-top_xx-large">
+      <div class="title-label">Record Identifier Field</div>
+
+      <lightning-combobox
+        style="max-width: 320px;"
+        label="Select the field that identifies each record"
+        value={selectedFieldReferenceUpdate}
+        placeholder="Available fields"
+        field-level-help="This field checks if a record already exists to perform update.
+          If not, a new one will be created. This helps avoid duplicated records."
+        options={fieldReferenceUpdateOptions}
+        onchange={handleChangeFieldReferenceUpdate}>
+      </lightning-combobox>
+    </div>
+  </template>
 
   <div class="footer-content slds-var-m-top_xx-large">
     <lightning-button variant="base" label="Back"></lightning-button>

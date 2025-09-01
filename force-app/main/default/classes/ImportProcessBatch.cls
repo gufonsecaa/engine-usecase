@@ -27,7 +27,7 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         ImportChunk__c currentChunk = scope[0];
         Import__c importRecord = [
             SELECT
-                Id, TargetObject__c, ColumnMap__c, Status__c,
+                Id, TargetObject__c, FieldReferenceUpdate__c, ColumnMap__c, Status__c,
                 TotalRows__c, ProcessedRows__c,SuccessRows__c, ErrorRows__c
             FROM Import__c
             WHERE Id = :currentChunk.Import__c
@@ -46,12 +46,12 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
         }
 
         String targetObjectName = importRecord.TargetObject__c;
-        String externalIdFieldName = 'Id';
+        String fieldReferenceNameUpdate = importRecord.FieldReferenceUpdate__c ?? 'Id';
 
         Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(targetObjectName);
         Map<String, Schema.SObjectField> sObjectFields = sObjectType.getDescribe().fields.getMap();
         // trativa de erro:
-        Schema.SObjectField externalIdField = sObjectFields.get(externalIdFieldName);
+        Schema.SObjectField fieldReferenceUpdate = sObjectFields.get(fieldReferenceNameUpdate);
 
         List<List<String>> fieldsList = (List<List<String>>) JSON.deserialize(
             importRecord.ColumnMap__c,
@@ -86,7 +86,7 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
             SObjectAccessDecision accessDecision = Security.stripInaccessible(AccessType.UPSERTABLE, records);
             List<SObject> safeRecords = (List<SObject>) accessDecision.getRecords();
 
-            Database.UpsertResult[] upsertResult = Database.upsert(safeRecords, externalIdField, false); // check if externalIdField is setted.
+            Database.UpsertResult[] upsertResult = Database.upsert(safeRecords, fieldReferenceUpdate, false);
 
             for (Integer i = 0; i < upsertResult.size(); i++) {
                 if (upsertResult[i].isSuccess()) {
@@ -144,7 +144,7 @@ public with sharing class ImportProcessBatch implements Database.Batchable<SObje
             List<String> fieldMap = fieldsList[i];
             if (fieldMap.size() == 1) continue;
 
-            String fieldName = fieldMap[1]; // get field api name;
+            String fieldName = fieldMap[1];
             rowRecord.put(fieldName, row[i]);
         }
 

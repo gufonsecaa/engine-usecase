@@ -14,6 +14,7 @@ export default class DataImporter extends LightningElement {
   @track currentStep = STEPS.SETUP_IMPORT;
 
   @track targetObject;
+  @track fieldReferenceUpdate;
   @track contentVersionId;
   @track columnMapping;
 
@@ -64,9 +65,10 @@ export default class DataImporter extends LightningElement {
   }
 
   handleMappingFinished(event) {
-    const { columnMapping } = event.detail;
+    const { columnMapping, fieldReferenceUpdate } = event.detail;
 
     this.columnMapping = columnMapping;
+    this.fieldReferenceUpdate = fieldReferenceUpdate;
 
     this.changeToStep(STEPS.PREVIEW_IMPORT);
   }
@@ -90,7 +92,7 @@ export default class DataImporter extends LightningElement {
         contentVersionId: this.contentVersionId,
         targetObjectName: this.targetObject,
         columnMapping: JSON.stringify(columnMap),
-        upsertExternalIdField: null,
+        fieldReferenceUpdate: this.fieldReferenceUpdate,
         numberOfLines: this.fileInfo.numberOfLines
       };
 
